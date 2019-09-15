@@ -1,6 +1,7 @@
 import * as application from "tns-core-modules/application";
 import * as platform from "tns-core-modules/platform";
-
+declare var android: any;
+declare var java: any;
 let context;
 let numberOfImagesCreated = 0;
 declare var global: any;
@@ -54,7 +55,7 @@ export function shareImage(image, subject) {
   share(intent, subject);
 }
 
-export function shareImageWithTextWhatsApp(image, subject) {
+export function shareImageWithTextWhatsApp(text,image, subject) {
   numberOfImagesCreated ++;
   context = application.android.context;
   const intent = getIntent("image/jpeg");
@@ -82,7 +83,7 @@ export function shareImageWithTextWhatsApp(image, subject) {
 
 
 export function shareImageMultipleWithTextWhatsApp(text,image, subject) {
-  const intent = new android.content.Intent(android.content.Intent.ACTION_SEND);
+  const intent = new android.content.Intent(android.content.Intent.ACTION_SEND_MULTIPLE);
   var shareableFileUri=new Array();
   for(let i=0; i<image.length;i++){
     numberOfImagesCreated ++;
@@ -103,7 +104,8 @@ export function shareImageMultipleWithTextWhatsApp(text,image, subject) {
       shareableFileUri.push(android.net.Uri.fromFile(newFile));
     }
   }
-  intent.putParcelableArrayListExtra(android.content.Intent.EXTRA_STREAM, shareableFileUri);
+  let ArrayList = new java.util.ArrayList<Element>(new java.util.Arrays.asList(shareableFileUri));
+  intent.putParcelableArrayListExtra(android.content.Intent.EXTRA_STREAM, ArrayList);
   intent.setType("text/plain");
   intent.putExtra(android.content.Intent.EXTRA_TEXT, text);
   intent.setPackage("com.whatsapp");
